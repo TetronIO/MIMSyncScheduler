@@ -37,7 +37,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// <summary>
         /// The master method. Runs when the program is run.
         /// </summary>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // program needs to run FIM run profiles via WMI in a specific sequence, some in parallel.
             // run profiles should be multi-stepped to make control via the scheduler a simple as possible. 
