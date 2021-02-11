@@ -35,8 +35,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         public void Stop()
         {
             var et = DateTime.UtcNow - _time;
-            var message = $"took {et.Hours}hr {et.Minutes}m {et.Seconds}s {et.Milliseconds}ms / {et.Ticks} ticks to run.";
-            Log.Debug(_parentClassName, _parentMethodName, message);
+            Log.Debug($"{_parentClassName}.{_parentMethodName} took {et.Hours}hr {et.Minutes}m {et.Seconds}s {et.Milliseconds}ms / {et.Ticks} ticks to run.");
         }
     }
 }
