@@ -49,7 +49,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 .MinimumLevel.Verbose()
                 .WriteTo.Console()
                 .WriteTo.Debug()
-                .WriteTo.File("logs/scheduler-logs.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("logs/scheduler-.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             Log.Information(LoggingPrefix + "Starting...");
