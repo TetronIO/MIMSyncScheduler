@@ -442,6 +442,14 @@ namespace Tetron.Mim.SynchronisationScheduler
             var timer = new Timer();
             var shell = PowerShell.Create();
             shell.Commands.AddScript(scriptPath);
+
+            // we need to subscribe to these event handlers so we can get progress of the PowerShell script out into our logs
+            shell.Streams.Debug.DataAdded += PowerShellDebugStreamHandler;
+            shell.Streams.Verbose.DataAdded += PowerShellVerboseStreamHandler;
+            shell.Streams.Information.DataAdded += PowerShellInformationStreamHandler;
+            shell.Streams.Warning.DataAdded += PowerShellWarningStreamHandler;
+            shell.Streams.Error.DataAdded += PowerShellErrorStreamHandler;
+
             var results = shell.Invoke();
             if (results == null || results.Count == 0)
                 return false;
@@ -603,6 +611,56 @@ namespace Tetron.Mim.SynchronisationScheduler
             if (!(tasks.All(q => q.Type != ScheduleTaskType.Block) || tasks.All(q => q.Type == ScheduleTaskType.Block)))
                 return false;
             return tasks.All(task => ValidateBlockTasks(task.ChildTasks));
+        }
+        #endregion
+
+        #region event handlers
+        private static void PowerShellVerboseStreamHandler(object sender, DataAddedEventArgs ea)
+        {
+            if (sender is PSDataCollection<VerboseRecord> streamObjectsReceived)
+            {
+                var currentStreamRecord = streamObjectsReceived[ea.Index];
+                Log.Verbose($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
+            }
+        }
+
+        private static void PowerShellDebugStreamHandler(object sender, DataAddedEventArgs ea)
+        {
+            if (sender is PSDataCollection<DebugRecord> streamObjectsReceived)
+            {
+                var currentStreamRecord = streamObjectsReceived[ea.Index];
+                
+            }
+        }
+
+        private static void PowerShellInformationStreamHandler(object sender, DataAddedEventArgs ea)
+        {
+            if (sender is PSDataCollection<InformationRecord> streamObjectsReceived)
+            {
+                var currentStreamRecord = streamObjectsReceived[ea.Index];
+                if (currentStreamRecord.MessageData is HostInformationMessage hostInformationMessage)
+                {
+                    Log.Information($"{LoggingPrefix}PowerShell: {hostInformationMessage.Message}");
+                }
+            }
+        }
+
+        private static void PowerShellWarningStreamHandler(object sender, DataAddedEventArgs ea)
+        {
+            if (sender is PSDataCollection<WarningRecord> streamObjectsReceived)
+            {
+                var currentStreamRecord = streamObjectsReceived[ea.Index];
+                Log.Warning($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
+            }
+        }
+
+        private static void PowerShellErrorStreamHandler(object sender, DataAddedEventArgs ea)
+        {
+            if (sender is PSDataCollection<ErrorRecord> streamObjectsReceived)
+            {
+                var currentStreamRecord = streamObjectsReceived[ea.Index];
+                Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}");
+            }
         }
         #endregion
     }
