@@ -46,7 +46,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             // program design must focus on simplicity and easy of reconfiguration.
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Verbose()
                 .WriteTo.Console()
                 .WriteTo.Debug()
                 .WriteTo.File("logs/scheduler-logs.txt", rollingInterval: RollingInterval.Day)
