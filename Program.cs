@@ -450,13 +450,16 @@ namespace Tetron.Mim.SynchronisationScheduler
             shell.Streams.Warning.DataAdded += PowerShellWarningStreamHandler;
             shell.Streams.Error.DataAdded += PowerShellErrorStreamHandler;
 
-            var results = shell.Invoke();
+            var results = shell.Invoke<string>();
             if (results == null || results.Count == 0)
                 return false;
 
-            var result = results[0].ToString().Equals("success", StringComparison.InvariantCultureIgnoreCase);
+            foreach (var result in results)
+                Log.Debug($"{LoggingPrefix}PowerShell output: {result}");
+
+            var successful = results[0].Equals("success", StringComparison.InvariantCultureIgnoreCase);
             timer.Stop();
-            return result;
+            return successful;
         }
 
         /// <summary>
