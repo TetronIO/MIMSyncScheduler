@@ -39,7 +39,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// </summary>
         private static void Main(string[] args)
         {
-            // program needs to run FIM run profiles via WMI in a specific sequence, some in parallel.
+            // program needs to run MIM run profiles via WMI in a specific sequence, some in parallel.
             // run profiles should be multi-stepped to make control via the scheduler a simple as possible. 
             // run profiles should be able to be toggled via the configuration file to allow for operational flexibility.
             // when some run profiles are complete, additional steps need to be performed to ensure dependent synchronisation tasks occur and/or data delivery occurs.
@@ -209,7 +209,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         }
 
         /// <summary>
-        /// Kicks off the synchronisation schedule, executing FIM run profiles and any post-processing tasks.
+        /// Kicks off the synchronisation schedule, executing MIM run profiles and any post-processing tasks.
         /// Performs steps in parallel where possible to minimise the total synchronisation time.
         /// </summary>
         private static void ExecuteSchedule(Schedule schedule)
@@ -293,7 +293,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                     if (shouldTaskRun)
                     {
                         Log.Information($"{LoggingPrefix}Executing the '{task.Name}' Management Agent, run profile: '{task.Command}'");
-                        taskComplete = ExecuteFimRunProfile(task.Name, task.Command, out var retryRequired);
+                        taskComplete = ExecuteMimRunProfile(task.Name, task.Command, out var retryRequired);
                         if (retryRequired) task.RetryRequired = true;
                     }
                     break;
@@ -345,13 +345,13 @@ namespace Tetron.Mim.SynchronisationScheduler
         }
 
         /// <summary>
-        /// Instructs the FIM Synchronisation Engine to execute a particular run profile against a particular management agent.
+        /// Instructs the MIM Synchronisation Engine to execute a particular run profile against a particular management agent.
         /// </summary>
-        /// <param name="managementAgentName">The name of the FIM management agent to execute a run profile against.</param>
+        /// <param name="managementAgentName">The name of the MIM management agent to execute a run profile against.</param>
         /// <param name="runProfileName">The name of the </param>
         /// <param name="retryRequired">If set to true, this run profile should be re-executed again on its own (could be related to a sql-deadlock result).</param>
         /// <returns>A boolean indicating whether or not the run profile completed (i.e. did not encounter a fatal error).</returns>
-        private static bool ExecuteFimRunProfile(string managementAgentName, string runProfileName, out bool retryRequired)
+        private static bool ExecuteMimRunProfile(string managementAgentName, string runProfileName, out bool retryRequired)
         {
             try
             {
@@ -367,12 +367,12 @@ namespace Tetron.Mim.SynchronisationScheduler
                 }
 
                 var timer = new Timer();
-                const string fimSyncServiceMaObjectSpace = "MIIS_ManagementAgent.Name";
-                const string fimSyncServiceWmiNameSpace = "root\\MicrosoftIdentityIntegrationServer";
+                const string mimSyncServiceMaObjectSpace = "MIIS_ManagementAgent.Name";
+                const string mimSyncServiceWmiNameSpace = "root\\MicrosoftIdentityIntegrationServer";
 
                 var managementObject = new ManagementObject(
-                    fimSyncServiceWmiNameSpace,
-                    $"{fimSyncServiceMaObjectSpace}='{managementAgentName}'",
+                    mimSyncServiceWmiNameSpace,
+                    $"{mimSyncServiceMaObjectSpace}='{managementAgentName}'",
                     null);
 
                 var inParameters = managementObject.GetMethodParameters("Execute");

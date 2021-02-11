@@ -34,7 +34,7 @@ namespace Tetron.Mim.SynchronisationScheduler.Models
         public string Arguments { get; set; }
         /// <summary>
         /// For SqlServer type tasks this defines the server/host name and can optionally include the instance name as well, 
-        /// i.e. "kclFimSqlSvr1" for the default instance on the kclFimSqlSvr1 host, or "kclFimSqlSvr1\Custom" for the 'Custom' instance on the same host.
+        /// i.e. "kclMimSqlSvr1" for the default instance on the kclMimSqlSvr1 host, or "kclMimSqlSvr1\Custom" for the 'Custom' instance on the same host.
         /// </summary>
         public string Server { get; set; }
         /// <summary>
