@@ -45,13 +45,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             // when some run profiles are complete, additional steps need to be performed to ensure dependent synchronisation tasks occur and/or data delivery occurs.
             // program design must focus on simplicity and easy of reconfiguration.
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.Console()
-                .WriteTo.Debug()
-                .WriteTo.File("logs/scheduler-.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
+            InitialiseLogging();
             Log.Information(LoggingPrefix + "Starting...");
             Log.Debug("------ Schedule execution starting... ------");
 
@@ -99,6 +93,45 @@ namespace Tetron.Mim.SynchronisationScheduler
         #endregion
 
         #region private methods
+        private static void InitialiseLogging()
+        {
+            var configLoggingLevel = ConfigurationManager.AppSettings["LoggingLevel"];
+            if (string.IsNullOrEmpty(configLoggingLevel))
+                configLoggingLevel = "Verbose";
+
+            var loggerConfiguration = new LoggerConfiguration();
+            switch (configLoggingLevel.ToLower())
+            {
+                case "verbose":
+                    loggerConfiguration.MinimumLevel.Verbose();
+                    break;
+                case "debug":
+                    loggerConfiguration.MinimumLevel.Debug();
+                    break;
+                case "information":
+                    loggerConfiguration.MinimumLevel.Information();
+                    break;
+                case "warning":
+                    loggerConfiguration.MinimumLevel.Warning();
+                    break;
+                case "error":
+                    loggerConfiguration.MinimumLevel.Error();
+                    break;
+                case "fatal":
+                    loggerConfiguration.MinimumLevel.Fatal();
+                    break;
+                default:
+                    loggerConfiguration.MinimumLevel.Information();
+                    break;
+            }
+
+            Log.Logger = loggerConfiguration
+                .WriteTo.Console()
+                .WriteTo.Debug()
+                .WriteTo.File("logs/scheduler-.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+        }
+
         /// <summary>
         /// Loads a synchronisation schedule from file into memory.
         /// </summary>
