@@ -54,7 +54,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 var timer = new Timer();
                 if (args == null || args.Length != 1)
                 {
-                    Log.Error(LoggingPrefix + "No schedule file path parameter supplied. Cannot continue.");
+                    Log.Fatal(LoggingPrefix + "No schedule file path parameter supplied. Cannot continue.");
                     return;
                 }
 
@@ -140,7 +140,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             var timer = new Timer();
             if (!File.Exists(scheduleFilePath))
             {
-                Log.Error(LoggingPrefix + "Schedule file not found at the supplied location. Processing cannot continue.");
+                Log.Fatal(LoggingPrefix + "Schedule file not found at the supplied location. Processing cannot continue.");
                 timer.Stop();
                 return null;
             }
@@ -149,7 +149,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             var doc = XDocument.Load(scheduleFilePath);
             if (doc.Root == null || !doc.Root.Name.ToString().Equals("Schedule", StringComparison.InvariantCultureIgnoreCase))
             {
-                Log.Error(LoggingPrefix + "No root Schedule node found in the schedule file. Processing cannot continue.");
+                Log.Fatal(LoggingPrefix + "No root Schedule node found in the schedule file. Processing cannot continue.");
                 timer.Stop();
                 return null;
             }
@@ -165,7 +165,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             // validate blocks
             if (!ValidateBlockTasks(schedule.Tasks))
             {
-                Log.Error(LoggingPrefix + "Block tasks found amongst non-block tasks. Block tasks must have block task siblings.");
+                Log.Fatal(LoggingPrefix + "Block tasks found amongst non-block tasks. Block tasks must have block task siblings.");
                 timer.Stop();
                 return null;
             }
