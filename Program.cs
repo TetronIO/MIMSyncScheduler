@@ -81,21 +81,19 @@ namespace Tetron.Mim.SynchronisationScheduler
                 Log.Information("Finished.");
                 timer.Stop();
                 if (!InWhatIfMode)
-                {
-                    // ensure all logs are written to the outputs before exiting.
-                    Log.CloseAndFlush();
                     return;
-                }
 
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
-
-                // ensure all logs are written to the outputs before exiting.
-                Log.CloseAndFlush();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, LoggingPrefix + "Unhandled exception: " + ex.Message);
+            }
+            finally
+            {
+                // ensure all logs are written to the outputs before exiting
+                Log.CloseAndFlush();
             }
         }
         #endregion
