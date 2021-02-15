@@ -632,7 +632,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             if (sender is PSDataCollection<DebugRecord> streamObjectsReceived)
             {
                 var currentStreamRecord = streamObjectsReceived[ea.Index];
-                
+                Log.Debug($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
             }
         }
 
