@@ -21,7 +21,7 @@ Other features:
 - Has a What-If mode to enable validation and testing
 - Uses XML configuration files to define the schedule
 
-Originally written in 2013, recently uplifted a little to get it portable and into GitHub. Battle-tested over the years against some of the largest MIM solutions during my time as a MIM consultant. Use as you like, will accept pull requests.
+Originally written in 2013, recently uplifted a little to get it portable and into GitHub. Battle-tested over the years against some of the largest MIM solutions during my time as a MIM consultant. Use as you like, will accept (good) pull requests.
 
 ## Usage:
 
