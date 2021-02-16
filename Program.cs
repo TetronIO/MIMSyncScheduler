@@ -568,7 +568,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{LoggingPrefix}Unhandled exception: {ex.Message}");
+                Log.Error(ex, $"{LoggingPrefix}SQL Server unhandled exception: {ex.Message}");
                 return false;
             }
         }
