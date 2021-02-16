@@ -561,7 +561,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                     connection.Open();
                     sqlCommand.CommandTimeout = 300;
                     sqlCommand.ExecuteNonQuery();
-                    Log.Information("Command executed: " + command);
+                    Log.Information($"SQL Server command executed: {command}");
                 }
                 timer.Stop();
                 return true;
