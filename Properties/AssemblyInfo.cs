@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Tetron.Mim.SynchronisationScheduler")]
 [assembly: AssemblyDescription("Built by Jay Van Der Zant")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Tetron Limited")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tetron.Mim.SynchronisationScheduler")]
-[assembly: AssemblyCopyright("Copyright © Tetron Limited, 2013")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
