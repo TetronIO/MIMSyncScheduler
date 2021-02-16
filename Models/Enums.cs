@@ -18,7 +18,7 @@
         SqlServer,
         /// <summary>
         /// Block task types are executed in sequence as opposed to in parallel. This allows for dependencies between tasks to be honoured.
-        /// Block tasks must be preceded and succeeded by zero or more sequence types. An exception will be thrown if any other type is a sibling.
+        /// Block tasks must be preceded and succeeded by zero or more Block types. An exception will be thrown if any other type is a sibling.
         /// </summary>
         Block
     }
