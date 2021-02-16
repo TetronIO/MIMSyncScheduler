@@ -554,7 +554,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             {
                 var timer = new Timer();
                 var connectionString = new SqlConnectionStringBuilder { DataSource = server, IntegratedSecurity = true };
-                Log.Information("connection string: " + connectionString);
+                Log.Information($"SQL Server connection string: {connectionString}");
                 using (var connection = new SqlConnection(connectionString.ToString()))
                 using (var sqlCommand = new SqlCommand(command, connection))
                 {
@@ -568,7 +568,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             }
             catch (Exception ex)
             {
-                Log.Error(ex, LoggingPrefix + "Unhandled exception: " + ex.Message);
+                Log.Error(ex, $"{LoggingPrefix}Unhandled exception: {ex.Message}");
                 return false;
             }
         }
