@@ -48,10 +48,11 @@ The schedule files are specified by command line argument to enable you to easil
 
 **Rules:**
 
-There are a couple of rules you need to follow when crafting schedule files:
+There are a few rules you need to follow when crafting schedule files:
 
  * Block elements are used to run child tasks in parallel. Child nodes of the Block node can all be siblings, i.e. a flat structure, or they can nest if required
- * All other elements must nest and not be siblings. This tells the scheduler that tasks are run one after another, i.e. the parent task is run, then the child, then it's child, etc.
+ * Block elements can only have siblings who are other Block elements
+ * All other elements must nest and cannot have siblings. This tells the scheduler that tasks are run one after another, i.e. the parent task is run, then the child, then it's child, etc.
 
 ### Tasks
 
