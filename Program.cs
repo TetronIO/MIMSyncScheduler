@@ -214,6 +214,14 @@ namespace Tetron.Mim.SynchronisationScheduler
                     throw new ConfigurationErrorsException("Path attribute is either missing or has an invalid value for a PowerShell node.");
                 task.Command = node.Attribute("Path").Value;
             }
+            else if (node.Name.ToString().Equals("VisualBasicScript", StringComparison.InvariantCultureIgnoreCase))
+            {
+                task.Name = node.Attribute("Name").Value;
+                task.Type = ScheduleTaskType.VisualBasicScript;
+                if (node.Attribute("Path") == null || string.IsNullOrEmpty(node.Attribute("Path").Value))
+                    throw new ConfigurationErrorsException("Path attribute is either missing or has an invalid value for a VisualBasicScript node.");
+                task.Command = node.Attribute("Path").Value;
+            }
             else if (node.Name.ToString().Equals("ContinuationCondition", StringComparison.InvariantCultureIgnoreCase))
             {
                 task.Name = "ContinuationCondition";
@@ -338,6 +346,10 @@ namespace Tetron.Mim.SynchronisationScheduler
                 case ScheduleTaskType.PowerShell:
                     Log.Information($"{LoggingPrefix}Executing '{task.Name}' PowerShell script: '{task.Command}'");
                     taskComplete = ExecutePowerShellScript(task.Command);
+                    break;
+                case ScheduleTaskType.VisualBasicScript:
+                    Log.Information($"{LoggingPrefix}Executing '{task.Name}' Visual Basic script: '{task.Command}'");
+                    taskComplete = ExecuteVisualBasicScript(task.Command);
                     break;
                 case ScheduleTaskType.Executable:
                     Log.Information($"{LoggingPrefix}Executing '{task.Name}' executable: '{task.Command}'");
@@ -498,6 +510,52 @@ namespace Tetron.Mim.SynchronisationScheduler
             var successful = results[0].Equals("success", StringComparison.InvariantCultureIgnoreCase);
             timer.Stop();
             return successful;
+        }
+
+        /// <summary>
+        /// Executes a Visual Basic script and returns a success/fail response.
+        /// </summary>
+        /// <param name="scriptPath">The full path to the vbs script.</param>
+        /// <returns>A boolean indicating whether or not the script returned a successful response.</returns>
+        private static bool ExecuteVisualBasicScript(string scriptPath)
+        {
+            if (InWhatIfMode)
+            {
+                // debug mode only shows what would happen if we were not in debug mode. no actions are to be performed.
+                Log.Debug($"{LoggingPrefix}Executing Visual Basic script: {scriptPath}");
+                return true;
+            }
+
+            try
+            {
+                var timer = new Timer();
+                var process = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = "cscript", 
+                        Arguments = $"/Nologo {scriptPath}", 
+                        CreateNoWindow = true,
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false
+                    }
+                };
+                process.OutputDataReceived += VbsOutputDataReceivedHandler;
+                process.ErrorDataReceived += VbsErrorDataReceivedHandler;
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
+                timer.Stop();
+                return (Utilities.SynchronisationTaskExitCode)process.ExitCode == Utilities.SynchronisationTaskExitCode.Success;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{LoggingPrefix}Unhandled exception when executing vbs task: {scriptPath}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -702,6 +760,17 @@ namespace Tetron.Mim.SynchronisationScheduler
                 var currentStreamRecord = streamObjectsReceived[ea.Index];
                 Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}");
             }
+        }
+
+        private static void VbsErrorDataReceivedHandler(object sender, DataReceivedEventArgs e)
+        {
+            if (e != null && !string.IsNullOrEmpty(e.Data))
+                Log.Error($"{LoggingPrefix}VBS: {e.Data}");
+        }
+
+        private static void VbsOutputDataReceivedHandler(object sender, DataReceivedEventArgs e)
+        {
+            Log.Information($"{LoggingPrefix}VBS: {e.Data}");
         }
         #endregion
     }
