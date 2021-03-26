@@ -491,6 +491,7 @@ namespace Tetron.Mim.SynchronisationScheduler
 
             var timer = new Timer();
             var shell = PowerShell.Create();
+            shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
             shell.Commands.AddScript(scriptPath);
 
             // we need to subscribe to these event handlers so we can get progress of the PowerShell script out into our logs
