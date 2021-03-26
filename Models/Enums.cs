@@ -8,6 +8,7 @@
         ManagementAgent,
         Executable,
         PowerShell,
+        VisualBasicScript,
         /// <summary>
         /// Represents a condition for a decision to be made on whether or not to process child tasks.
         /// </summary>
