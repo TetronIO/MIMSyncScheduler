@@ -771,7 +771,7 @@ namespace Tetron.Mim.SynchronisationScheduler
 
         private static void VbsOutputDataReceivedHandler(object sender, DataReceivedEventArgs e)
         {
-            Log.Information($"{LoggingPrefix}VBS: {e.Data}");
+            Log.Debug($"{LoggingPrefix}VBS: {e.Data}");
         }
         #endregion
     }
