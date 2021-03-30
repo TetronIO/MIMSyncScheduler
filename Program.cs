@@ -578,14 +578,27 @@ namespace Tetron.Mim.SynchronisationScheduler
             try
             {
                 var timer = new Timer();
-                var process = new Process { StartInfo = { CreateNoWindow = !showWindow, FileName = executablePath, Arguments = arguments} };
-                process.Start();
-                if (!process.WaitForExit(Convert.ToInt32(TimeSpan.FromDays(1).TotalMilliseconds)))
+                var process = new Process
                 {
-                    Log.Error("Scheduler executable task didn't end on its own: " + executablePath);
-                    process.Kill();
-                }
+                    StartInfo =
+                    {
+                        FileName = executablePath,
+                        Arguments = arguments,
+                        CreateNoWindow = !showWindow,
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false
+                    }
+                };
+                process.OutputDataReceived += ExecutableOutputDataReceivedHandler;
+                process.ErrorDataReceived += ExecutableErrorDataReceivedHandler;
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
                 timer.Stop();
+
                 return (Utilities.SynchronisationTaskExitCode) process.ExitCode == Utilities.SynchronisationTaskExitCode.Success;
             }
             catch (Exception ex)
@@ -772,6 +785,17 @@ namespace Tetron.Mim.SynchronisationScheduler
         private static void VbsOutputDataReceivedHandler(object sender, DataReceivedEventArgs e)
         {
             Log.Debug($"{LoggingPrefix}VBS: {e.Data}");
+        }
+
+        private static void ExecutableErrorDataReceivedHandler(object sender, DataReceivedEventArgs e)
+        {
+            if (e != null && !string.IsNullOrEmpty(e.Data))
+                Log.Error($"{LoggingPrefix}Executable: {e.Data}");
+        }
+
+        private static void ExecutableOutputDataReceivedHandler(object sender, DataReceivedEventArgs e)
+        {
+            Log.Debug($"{LoggingPrefix}Executable: {e.Data}");
         }
         #endregion
     }
