@@ -535,7 +535,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                     StartInfo =
                     {
                         FileName = "cscript", 
-                        Arguments = $"/Nologo {scriptPath}", 
+                        Arguments = $"/Nologo \"{scriptPath}\"", 
                         CreateNoWindow = true,
                         RedirectStandardError = true,
                         RedirectStandardOutput = true,
