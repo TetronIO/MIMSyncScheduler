@@ -490,7 +490,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             }
 
             var timer = new Timer();
-            var shell = PowerShell.Create();
+            using var shell = PowerShell.Create();
             shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
             shell.Commands.AddScript(scriptPath);
 
@@ -772,7 +772,10 @@ namespace Tetron.Mim.SynchronisationScheduler
             if (sender is PSDataCollection<ErrorRecord> streamObjectsReceived)
             {
                 var currentStreamRecord = streamObjectsReceived[ea.Index];
-                Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}");
+                if (currentStreamRecord.ErrorDetails != null)
+                    Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}");
+                else
+                    Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.Exception.Message}");
             }
         }
 
