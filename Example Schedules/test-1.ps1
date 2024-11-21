@@ -1,0 +1,1 @@
+Write-Host 'Hello World. This is test-1.ps1!'
