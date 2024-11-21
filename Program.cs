@@ -488,29 +488,38 @@ namespace Tetron.Mim.SynchronisationScheduler
                 Log.Debug($"{LoggingPrefix}Executing PowerShell script: {scriptPath}");
                 return true;
             }
+            
+            try
+            {
+                var timer = new Timer();
+                using var shell = PowerShell.Create();
+                shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
+                shell.Commands.AddScript(scriptPath);
 
-            var timer = new Timer();
-            using var shell = PowerShell.Create();
-            shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
-            shell.Commands.AddScript(scriptPath);
+                // we need to subscribe to these event handlers so we can get progress of the PowerShell script out into our logs
+                shell.Streams.Debug.DataAdded += PowerShellDebugStreamHandler;
+                shell.Streams.Verbose.DataAdded += PowerShellVerboseStreamHandler;
+                shell.Streams.Information.DataAdded += PowerShellInformationStreamHandler;
+                shell.Streams.Warning.DataAdded += PowerShellWarningStreamHandler;
+                shell.Streams.Error.DataAdded += PowerShellErrorStreamHandler;
 
-            // we need to subscribe to these event handlers so we can get progress of the PowerShell script out into our logs
-            shell.Streams.Debug.DataAdded += PowerShellDebugStreamHandler;
-            shell.Streams.Verbose.DataAdded += PowerShellVerboseStreamHandler;
-            shell.Streams.Information.DataAdded += PowerShellInformationStreamHandler;
-            shell.Streams.Warning.DataAdded += PowerShellWarningStreamHandler;
-            shell.Streams.Error.DataAdded += PowerShellErrorStreamHandler;
+                var results = shell.Invoke<string>();
+                if (results == null || results.Count == 0)
+                    return true;
 
-            var results = shell.Invoke<string>();
-            if (results == null || results.Count == 0)
+                // we used to watch for a 'success' response, but this isn't required anymore
+                // but we might still want to inspect the output in the future, so leaving this logging in.
+                foreach (var result in results)
+                    Log.Debug($"{LoggingPrefix}PowerShell output: {result}");
+
+                timer.Stop();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{LoggingPrefix}Unhandled exception when executing PowerShell task: {scriptPath}");
                 return false;
-
-            foreach (var result in results)
-                Log.Debug($"{LoggingPrefix}PowerShell output: {result}");
-
-            var successful = results[0].Equals("success", StringComparison.InvariantCultureIgnoreCase);
-            timer.Stop();
-            return successful;
+            }
         }
 
         /// <summary>
