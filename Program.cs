@@ -14,11 +14,11 @@ using Tetron.Mim.SynchronisationScheduler.Models;
 
 namespace Tetron.Mim.SynchronisationScheduler
 {
-    internal class Program
+    internal static class Program
     {
         #region accessors
         /// <summary>
-        /// Indicates whether or not any management agents that have run imports have resulted in any pending imports to the Metaverse.
+        /// Indicates whether any management agents that have run imports have resulted in any pending imports to the Metaverse.
         /// </summary>
         private static bool ManagementAgentImportsHadChanges { get; set; }
         private static bool InWhatIfMode { get; set; }
@@ -262,7 +262,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         {
             // thought: should the scheduler run continuously for a set period and try and run the supplied schedule
             // as often as possible, whilst respecting an optional minimal interval period, or leave it up to a Windows Scheduled Task
-            // to call the scheduler every now and then? Going with the latter for now.
+            // to call the scheduler sometimes? Going with the latter for now.
 
             // process:
             // -- run non-block tasks in parallel.
@@ -496,7 +496,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
                 shell.Commands.AddScript(scriptPath);
 
-                // we need to subscribe to these event handlers so we can get progress of the PowerShell script out into our logs
+                // we need to subscribe to these event handlers, so we can get progress of the PowerShell script out into our logs
                 shell.Streams.Debug.DataAdded += PowerShellDebugStreamHandler;
                 shell.Streams.Verbose.DataAdded += PowerShellVerboseStreamHandler;
                 shell.Streams.Information.DataAdded += PowerShellInformationStreamHandler;
@@ -507,7 +507,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 if (results == null || results.Count == 0)
                     return true;
 
-                // we used to watch for a 'success' response, but this isn't required anymore
+                // we used to watch for a 'success' response, but this isn't required anymore,
                 // but we might still want to inspect the output in the future, so leaving this logging in.
                 foreach (var result in results)
                     Log.Debug($"{LoggingPrefix}PowerShell output: {result}");
@@ -778,14 +778,14 @@ namespace Tetron.Mim.SynchronisationScheduler
 
         private static void PowerShellErrorStreamHandler(object sender, DataAddedEventArgs ea)
         {
-            if (sender is PSDataCollection<ErrorRecord> streamObjectsReceived)
-            {
-                var currentStreamRecord = streamObjectsReceived[ea.Index];
-                if (currentStreamRecord.ErrorDetails != null)
-                    Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}");
-                else
-                    Log.Error(currentStreamRecord.Exception, $"{LoggingPrefix}PowerShell: {currentStreamRecord.Exception.Message}");
-            }
+            if (!(sender is PSDataCollection<ErrorRecord> streamObjectsReceived)) 
+                return;
+            
+            var currentStreamRecord = streamObjectsReceived[ea.Index];
+            Log.Error(currentStreamRecord.Exception,
+                currentStreamRecord.ErrorDetails != null
+                    ? $"{LoggingPrefix}PowerShell: {currentStreamRecord.ErrorDetails.Message}"
+                    : $"{LoggingPrefix}PowerShell: {currentStreamRecord.Exception.Message}");
         }
 
         private static void VbsErrorDataReceivedHandler(object sender, DataReceivedEventArgs e)
