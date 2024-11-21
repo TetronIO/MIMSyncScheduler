@@ -286,7 +286,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             // tasks are executed in parallel by default, though block task types are executed in sequence to help preserve dependencies.
             if (tasks.All(q => q.Type == ScheduleTaskType.Block))
             {
-                // ReSharper would rewrite the foreach so it's less clear it's a loop we want to stop at the first instance of an issue. don't let it!
+                // ReSharper would rewrite the foreach, so it's less clear it's a loop we want to stop at the first instance of an issue. don't let it!
                 foreach (var task in tasks.Where(task => !ExecuteScheduleTask(task)))
                 {
                     Log.Warning($"Not continuing to process the schedule due to the task '{task.Name}' not completing and the schedule being set to stop on errors.");
@@ -400,7 +400,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// <param name="managementAgentName">The name of the MIM management agent to execute a run profile against.</param>
         /// <param name="runProfileName">The name of the </param>
         /// <param name="retryRequired">If set to true, this run profile should be re-executed again on its own (could be related to a sql-deadlock result).</param>
-        /// <returns>A boolean indicating whether or not the run profile completed (i.e. did not encounter a fatal error).</returns>
+        /// <returns>A boolean indicating whether the run profile completed (i.e. did not encounter a fatal error).</returns>
         private static bool ExecuteMimRunProfile(string managementAgentName, string runProfileName, out bool retryRequired)
         {
             try
@@ -447,7 +447,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 if (goodResponse)
                 {
                     // if this was an import run profile then we need to see if it resulted in any pending imports
-                    // as this may be used later in the schedule to determine whether or not to continue processing.
+                    // as this may be used later in the schedule to determine whether to continue processing.
                     // dependency: requires a convention of DISO* or FISO* to represent delta/full-import run profiles -- we could just do this for all operations but this might slow the schedule down.
                     if (runProfileName.StartsWith("DISO", StringComparison.InvariantCultureIgnoreCase) || runProfileName.StartsWith("FISO", StringComparison.InvariantCultureIgnoreCase))
                         if (!ManagementAgentImportsHadChanges && PendingImportsInManagementAgent(managementAgentName))
@@ -479,7 +479,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// Executes a PowerShell script and returns a success/fail response.
         /// </summary>
         /// <param name="scriptPath">The full path to the PowerShell script.</param>
-        /// <returns>A boolean indicating whether or not the script returned a successful response.</returns>
+        /// <returns>A boolean indicating whether the script returned a successful response.</returns>
         private static bool ExecutePowerShellScript(string scriptPath)
         {
             if (InWhatIfMode)
@@ -526,7 +526,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// Executes a Visual Basic script and returns a success/fail response.
         /// </summary>
         /// <param name="scriptPath">The full path to the vbs script.</param>
-        /// <returns>A boolean indicating whether or not the script returned a successful response.</returns>
+        /// <returns>A boolean indicating whether the script returned a successful response.</returns>
         private static bool ExecuteVisualBasicScript(string scriptPath)
         {
             if (InWhatIfMode)
@@ -574,7 +574,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// </summary>
         /// <param name="executablePath">The full path to the executable.</param>
         /// <param name="arguments">Any arguments needed to accompany the executable path.</param>
-        /// <param name="showWindow">Determines whether or not the executable window will be shown to the logged-in user.</param>
+        /// <param name="showWindow">Determines whether the executable window will be shown to the logged-in user.</param>
         private static bool ExecuteExecutable(string executablePath, string arguments, bool showWindow)
         {
             if (InWhatIfMode)
@@ -618,7 +618,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         }
 
         /// <summary>
-        /// Executes a MS SQL Server command against a specific host. No response is returned.
+        /// Executes an MS SQL Server command against a specific host. No response is returned.
         /// Use "EXEC ..." for executing stored procedures.
         /// Use fully qualified references to objects, i.e. 'database.schema.object'.
         /// </summary>
@@ -655,7 +655,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         }
 
         /// <summary>
-        /// Determines whether or not there are any pending exports on a management agent.
+        /// Determines whether there are any pending exports on a management agent.
         /// Useful for determining if an export should take place or not and any dependent actions.
         /// </summary>
         /// <param name="managementAgentName">The name of the Management Agent as seen in the Synchronisation Manager.</param>
@@ -689,7 +689,7 @@ namespace Tetron.Mim.SynchronisationScheduler
         }
 
         /// <summary>
-        /// Determines whether or not there are any pending imports on a management agent.
+        /// Determines whether there are any pending imports on a management agent.
         /// Useful for determining if a synchronisation should take place or not and any dependent actions.
         /// </summary>
         /// <param name="managementAgentName">The name of the Management Agent as seen in the Synchronisation Manager.</param>
