@@ -52,7 +52,7 @@ namespace Tetron.Mim.SynchronisationScheduler
             try
             {
                 var timer = new Timer();
-                if (args == null || args.Length != 1)
+                if (!(args is { Length: 1 }))
                 {
                     Log.Fatal(LoggingPrefix + "No schedule file path parameter supplied. Cannot continue.");
                     return;
@@ -409,7 +409,8 @@ namespace Tetron.Mim.SynchronisationScheduler
                 {
                     // debug mode only shows what would happen if we were not in debug mode. no actions are to be performed.
                     Log.Debug($"{LoggingPrefix}Executing run profile: {managementAgentName}\\{runProfileName}");
-                    if (runProfileName.StartsWith("DISO", StringComparison.InvariantCultureIgnoreCase) || runProfileName.StartsWith("FISO", StringComparison.InvariantCultureIgnoreCase))
+                    if (runProfileName.StartsWith("DISO", StringComparison.InvariantCultureIgnoreCase) || 
+                        runProfileName.StartsWith("FISO", StringComparison.InvariantCultureIgnoreCase))
                         ManagementAgentImportsHadChanges = true;
 
                     retryRequired = false;
@@ -438,7 +439,9 @@ namespace Tetron.Mim.SynchronisationScheduler
                 // extending the bad response of 'stopped-*' as a catch for no response, which is also bad.
                 var returnValue = result != null ? result.Properties["ReturnValue"].Value.ToString() : "stopped";
                 Log.Information($"MA: {managementAgentName}, Run profile: {runProfileName}, ReturnValue: {returnValue}");
-                var goodResponse = !(returnValue.StartsWith("stopped") || returnValue.StartsWith("call-failure:") || returnValue.StartsWith("no-start-") || returnValue.Equals("sql-deadlock"));
+                var goodResponse = !(returnValue.StartsWith("stopped") || 
+                                       returnValue.StartsWith("call-failure:") || 
+                                       returnValue.StartsWith("no-start-") || returnValue.Equals("sql-deadlock"));
 
                 // these responses are actually acceptable but have been marked as bad already above.
                 if (returnValue.Equals("stopped-user-termination-from-wmi-or-ui") || returnValue.Equals("stopped-object-limit"))
@@ -739,41 +742,39 @@ namespace Tetron.Mim.SynchronisationScheduler
         #region event handlers
         private static void PowerShellVerboseStreamHandler(object sender, DataAddedEventArgs ea)
         {
-            if (sender is PSDataCollection<VerboseRecord> streamObjectsReceived)
-            {
-                var currentStreamRecord = streamObjectsReceived[ea.Index];
-                Log.Verbose($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
-            }
+            if (!(sender is PSDataCollection<VerboseRecord> streamObjectsReceived)) 
+                return;
+            
+            var currentStreamRecord = streamObjectsReceived[ea.Index];
+            Log.Verbose($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
         }
 
         private static void PowerShellDebugStreamHandler(object sender, DataAddedEventArgs ea)
         {
-            if (sender is PSDataCollection<DebugRecord> streamObjectsReceived)
-            {
-                var currentStreamRecord = streamObjectsReceived[ea.Index];
-                Log.Debug($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
-            }
+            if (!(sender is PSDataCollection<DebugRecord> streamObjectsReceived)) 
+                return;
+            
+            var currentStreamRecord = streamObjectsReceived[ea.Index];
+            Log.Debug($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
         }
 
         private static void PowerShellInformationStreamHandler(object sender, DataAddedEventArgs ea)
         {
-            if (sender is PSDataCollection<InformationRecord> streamObjectsReceived)
-            {
-                var currentStreamRecord = streamObjectsReceived[ea.Index];
-                if (currentStreamRecord.MessageData is HostInformationMessage hostInformationMessage)
-                {
-                    Log.Information($"{LoggingPrefix}PowerShell: {hostInformationMessage.Message}");
-                }
-            }
+            if (!(sender is PSDataCollection<InformationRecord> streamObjectsReceived)) 
+                return;
+            
+            var currentStreamRecord = streamObjectsReceived[ea.Index];
+            if (currentStreamRecord.MessageData is HostInformationMessage hostInformationMessage)
+                Log.Information($"{LoggingPrefix}PowerShell: {hostInformationMessage.Message}");
         }
 
         private static void PowerShellWarningStreamHandler(object sender, DataAddedEventArgs ea)
         {
-            if (sender is PSDataCollection<WarningRecord> streamObjectsReceived)
-            {
-                var currentStreamRecord = streamObjectsReceived[ea.Index];
-                Log.Warning($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
-            }
+            if (!(sender is PSDataCollection<WarningRecord> streamObjectsReceived)) 
+                return;
+            
+            var currentStreamRecord = streamObjectsReceived[ea.Index];
+            Log.Warning($"{LoggingPrefix}PowerShell: {currentStreamRecord.Message}");
         }
 
         private static void PowerShellErrorStreamHandler(object sender, DataAddedEventArgs ea)
