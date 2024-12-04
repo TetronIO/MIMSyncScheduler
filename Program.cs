@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Tetron.Mim.SynchronisationScheduler.Models;
@@ -495,8 +496,9 @@ namespace Tetron.Mim.SynchronisationScheduler
             try
             {
                 var timer = new Timer();
-                using var shell = PowerShell.Create();
-                shell.AddCommand("Set-ExecutionPolicy").AddArgument("Unrestricted").AddParameter("Scope", "CurrentUser");
+                var initialState = InitialSessionState.CreateDefault();
+                initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Unrestricted;
+                using var shell = PowerShell.Create(initialState);
                 shell.Commands.AddScript(scriptPath);
 
                 // we need to subscribe to these event handlers, so we can get progress of the PowerShell script out into our logs
