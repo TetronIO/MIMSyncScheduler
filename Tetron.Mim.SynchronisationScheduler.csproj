@@ -114,6 +114,9 @@
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>
     </None>
+    <None Include="Example Schedules\full-schedule.config" />
+    <None Include="Example Schedules\ps-test-schedule.config" />
+    <None Include="Example Schedules\vbs-test-schedule.config" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
@@ -133,6 +136,10 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Example Schedules\test-1.ps1" />
+    <Content Include="Example Schedules\test-2.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
