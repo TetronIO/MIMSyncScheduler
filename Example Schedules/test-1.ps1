@@ -1,9 +1,11 @@
 $ErrorActionPreference = 'Stop'
-$module_name = 'LithnetRMA'
-$module_name = 'C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules\LithnetRMA\LithnetRMA.psd1'
-$module_name = 'TLS'
-$module_name = 'AppX'
-$module_name = 'LAPS'
-$module_name = 'DISM'
+$module_name = 'LithnetMiisAutomation'
+
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Write-Host 'Installed NuGet package provider'
+
+Install-Module -Name $module_name -AllowClobber -Scope CurrentUser -Force
+Write-Host "Installed module $module_name"
+
 Import-Module $module_name
 Write-Host "Hello World. This is test-1.ps1! $module_name module imported."
