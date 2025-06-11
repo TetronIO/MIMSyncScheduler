@@ -230,7 +230,7 @@ namespace Tetron.Mim.SynchronisationScheduler
                 if (node.Attribute("Type") != null && node.Attribute("Type").Value.Equals("ManagementAgentsHadImports", StringComparison.InvariantCultureIgnoreCase))
                     task.ConditionType = ContinuationConditionType.ManagementAgentsHadImports;
                 else
-                    throw new ConfigurationErrorsException("Either no value or an invalid value was supplied for tye type attribute on a ContinuationCondition node in the schedule file.");
+                    throw new ConfigurationErrorsException("Either no value or an invalid value was supplied for the type attribute on a ContinuationCondition node in the schedule file.");
             }
             else if (node.Name.ToString().Equals("SqlServer", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -389,7 +389,9 @@ namespace Tetron.Mim.SynchronisationScheduler
                 return false;
             }
 
-            if (taskComplete || task.ChildTasks.Count <= 0) return ExecuteTasks(task.ChildTasks);
+            if (taskComplete)
+                return task.ChildTasks.Count > 0 ? ExecuteTasks(task.ChildTasks) : true;
+
             Log.Warning(LoggingPrefix + "Not executing child tasks due to the last error event. Current task: " + task.ToString());
             return false;
             #endregion
