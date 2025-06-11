@@ -63,7 +63,7 @@ namespace Tetron.Mim.SynchronisationScheduler.Models
         }
         #endregion
 
-        public new string ToString()
+        public override string ToString()
         {
             return Type == ScheduleTaskType.ManagementAgent ? $"{Name} - {Command}" : Name;
         }
