@@ -22,4 +22,17 @@
     <ProjectReference Include="..\..\src\Tetron.Mim.SynchronisationScheduler\Tetron.Mim.SynchronisationScheduler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestHelpers\*.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestHelpers\*.vbs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestHelpers\*.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
 </Project>
