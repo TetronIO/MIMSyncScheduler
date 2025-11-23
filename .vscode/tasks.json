@@ -20,7 +20,9 @@
             "args": [
                 "test",
                 "${workspaceFolder}/Tetron.Mim.SynchronisationScheduler.sln",
-                "--no-build"
+                "--no-build",
+                "--logger",
+                "console;verbosity=detailed"
             ],
             "problemMatcher": "$msCompile",
             "group": {
@@ -38,7 +40,9 @@
             "type": "process",
             "args": [
                 "test",
-                "${workspaceFolder}/Tetron.Mim.SynchronisationScheduler.sln"
+                "${workspaceFolder}/Tetron.Mim.SynchronisationScheduler.sln",
+                "--logger",
+                "console;verbosity=detailed"
             ],
             "problemMatcher": "$msCompile",
             "group": {
