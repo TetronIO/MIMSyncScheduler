@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ master, feature/* ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Tetron.Mim.SynchronisationScheduler.sln
+
+    - name: Build solution
+      run: dotnet build Tetron.Mim.SynchronisationScheduler.sln --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test Tetron.Mim.SynchronisationScheduler.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+    - name: Publish test results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test Results
+        path: '**/test-results.trx'
+        reporter: dotnet-trx
+        fail-on-error: true
