@@ -40,54 +40,63 @@ namespace Tetron.Mim.SynchronisationScheduler
         /// </summary>
         private static void Main(string[] args)
         {
-            // program needs to run MIM run profiles via WMI in a specific sequence, some in parallel.
-            // run profiles should be multi-stepped to make control via the scheduler a simple as possible. 
-            // run profiles should be able to be toggled via the configuration file to allow for operational flexibility.
-            // when some run profiles are complete, additional steps need to be performed to ensure dependent synchronisation tasks occur and/or data delivery occurs.
-            // program design must focus on simplicity and easy of reconfiguration.
-
             InitialiseLogging();
-            Log.Information(LoggingPrefix + "Starting...");
-            Log.Debug("------ Schedule execution starting... ------");
 
             try
             {
                 var timer = new Timer();
+
+                // Validate arguments
                 if (!(args is { Length: 1 }))
                 {
-                    Log.Fatal(LoggingPrefix + "No schedule file path parameter supplied. Cannot continue.");
+                    Log.Fatal("No schedule file path parameter supplied. Cannot continue.");
                     return;
                 }
 
+                // Determine WhatIf mode
+                var whatIfMode = false;
                 if (ConfigurationManager.AppSettings["whatif"] != null)
                 {
-                    InWhatIfMode = bool.Parse(ConfigurationManager.AppSettings["whatif"]);
-                    if (InWhatIfMode)
+                    whatIfMode = bool.Parse(ConfigurationManager.AppSettings["whatif"]);
+                    if (whatIfMode)
                         Log.Debug("WhatIfMode enabled.");
                 }
 
+                var loggingPrefix = whatIfMode ? "WHATIF: " : string.Empty;
+                Log.Information($"{loggingPrefix}Starting...");
+                Log.Debug("------ Schedule execution starting... ------");
+
+                // Load schedule
                 var schedule = LoadSchedule(args[0]);
                 if (schedule == null)
                     return;
 
-                ExecuteSchedule(schedule);
-                Log.Debug("------ Schedule execution complete ------");
+                // Create services with dependency injection
+                var processExecutor = new Services.ProcessExecutor(whatIfMode);
+                var sqlExecutor = new Services.SqlExecutor(whatIfMode);
+                var managementAgentExecutor = new Services.ManagementAgentExecutor(whatIfMode);
+                var taskExecutor = new Services.TaskExecutor(processExecutor, sqlExecutor, managementAgentExecutor, whatIfMode);
+                var scheduleExecutor = new Services.ScheduleExecutor(taskExecutor, whatIfMode);
 
+                // Execute schedule
+                scheduleExecutor.ExecuteSchedule(schedule);
+
+                Log.Debug("------ Schedule execution complete ------");
                 Log.Information("Finished.");
                 timer.Stop();
-                if (!InWhatIfMode)
-                    return;
 
-                Console.WriteLine("Press any key to exit.");
-                Console.ReadKey();
+                if (whatIfMode)
+                {
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadKey();
+                }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, LoggingPrefix + "Unhandled exception: " + ex.Message);
+                Log.Error(ex, $"Unhandled exception: {ex.Message}");
             }
             finally
             {
-                // ensure all logs are written to the outputs before exiting
                 Log.CloseAndFlush();
             }
         }
