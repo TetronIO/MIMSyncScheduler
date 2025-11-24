@@ -226,10 +226,56 @@ Schedules are defined in XML configuration files. See `src/Tetron.Mim.Synchronis
 Key settings in App.config:
 - `LoggingLevel` - Verbose, Debug, Information, Warning, Error, Fatal
 - `whatif` - true/false for simulation mode
+- `LogFileMode` - Daily (default) or PerExecution
+  - Daily: Creates one log file per day with format `YYYYMMDD-scheduler.log` (all executions on same day share the file)
+  - PerExecution: Creates unique log file per execution with format `YYYYMMDDHHmmss-scheduler.log`
 
 ---
 
 ## Contributing
+
+### Development Workflow (SOP)
+
+**ALWAYS use feature branches for new features or non-trivial changes:**
+
+1. **Create feature branch from master:**
+   ```bash
+   git checkout master
+   git pull
+   git checkout -b feature/descriptive-name
+   ```
+
+2. **Make changes with tests:**
+   - Write code following code style guidelines
+   - Add/update unit tests
+   - Ensure all tests pass (`dotnet test`)
+   - Update documentation as needed
+
+3. **Commit changes:**
+   ```bash
+   git add .
+   git commit -m "Descriptive commit message"
+   ```
+
+4. **Push feature branch:**
+   ```bash
+   git push -u origin feature/descriptive-name
+   ```
+
+5. **Create Pull Request:**
+   - Use GitHub UI or `gh pr create`
+   - Include description of changes
+   - Wait for CI/CD to pass
+   - Request review if needed
+
+6. **Merge and cleanup:**
+   - Merge PR via GitHub
+   - Delete feature branch
+   - Pull latest master locally
+
+**Direct commits to master** should only be used for:
+- Documentation-only changes (typo fixes, README updates)
+- Emergency hotfixes (with immediate follow-up PR for review)
 
 ### Code Style
 - British English spelling (e.g., "Synchronisation", "Initialise")

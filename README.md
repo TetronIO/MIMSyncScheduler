@@ -171,12 +171,25 @@ See [Testing](#testing) for more details.
 **Tip:** Create multiple scheduled tasks for different schedule files (e.g., delta sync every 15 minutes, full sync weekly).
 
 ### Logs
-Logs are written to:
-```
-logs\scheduler-YYYY-MM-DD.log
-```
+Log files are created in the `logs\` directory with names based on the `LogFileMode` configuration:
 
-Rolling logs create a new file each day and retain history based on Serilog defaults.
+**Daily mode** (default):
+```
+logs\YYYYMMDD-scheduler.log
+```
+Example: `logs\20251124-scheduler.log`
+
+All executions on the same day write to the same log file.
+
+**PerExecution mode:**
+```
+logs\YYYYMMDDHHmmss-scheduler.log
+```
+Example: `logs\20251124143052-scheduler.log`
+
+Each schedule execution creates a unique log file.
+
+Use `Daily` mode for production environments where multiple executions per day should write to the same log file. Use `PerExecution` mode when you want complete isolation between schedule runs for debugging or auditing purposes.
 
 ---
 
@@ -190,12 +203,14 @@ Program behaviour is customised via `App.config` settings:
 | --- | ------ | ------- | ----------- |
 | `LoggingLevel` | `Verbose`, `Debug`, `Information`, `Warning`, `Error`, `Fatal` | `Information` | Controls log verbosity. Use `Debug` for development, `Information` or `Warning` for production. |
 | `whatif` | `true`, `false` | `false` | **What-If mode** - When `true`, executes the schedule logic and creates logs but **does not perform actual operations**. Essential for testing schedules safely. |
+| `LogFileMode` | `Daily`, `PerExecution` | `Daily` | **Log file mode** - Controls how log files are created. `Daily` creates one log file per day (format: `YYYYMMDD-scheduler.log`) - all executions on the same day write to the same file. `PerExecution` creates a new log file for each schedule execution (format: `YYYYMMDDHHmmss-scheduler.log`). |
 
 **Example App.config:**
 ```xml
 <appSettings>
   <add key="LoggingLevel" value="Information" />
   <add key="whatif" value="false" />
+  <add key="LogFileMode" value="Daily" />
 </appSettings>
 ```
 

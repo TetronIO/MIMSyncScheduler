@@ -115,11 +115,36 @@ namespace Tetron.Mim.SynchronisationScheduler
                     break;
             }
 
-            Log.Logger = loggerConfiguration
-                .WriteTo.Console()
-                .WriteTo.Debug()
-                .WriteTo.File("logs/scheduler-.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
+            // Determine log file mode
+            var logFileMode = ConfigurationManager.AppSettings["LogFileMode"];
+            if (string.IsNullOrEmpty(logFileMode))
+                logFileMode = "Daily";
+
+            string logFilePath;
+            switch (logFileMode.ToLower())
+            {
+                case "perexecution":
+                    // Format: YYYYMMDDHHmmss-scheduler.log
+                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    logFilePath = $"logs/{timestamp}-scheduler.log";
+                    Log.Logger = loggerConfiguration
+                        .WriteTo.Console()
+                        .WriteTo.Debug()
+                        .WriteTo.File(logFilePath)
+                        .CreateLogger();
+                    break;
+                case "daily":
+                default:
+                    // Format: YYYYMMDD-scheduler.log (shared for all executions on same day)
+                    var dateStamp = DateTime.Now.ToString("yyyyMMdd");
+                    logFilePath = $"logs/{dateStamp}-scheduler.log";
+                    Log.Logger = loggerConfiguration
+                        .WriteTo.Console()
+                        .WriteTo.Debug()
+                        .WriteTo.File(logFilePath)
+                        .CreateLogger();
+                    break;
+            }
         }
 
         /// <summary>
