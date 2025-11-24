@@ -2,7 +2,7 @@
 
 [![Tests](https://img.shields.io/badge/tests-37%20passing-success)](tests/Tetron.Mim.SynchronisationScheduler.Tests/)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8.1-blue)](https://dotnet.microsoft.com/download/dotnet-framework)
-[![Build](https://github.com/TetronIO/MIMSyncScheduler/actions/workflows/build.yml/badge.svg)](https://github.com/TetronIO/MIMSyncScheduler/actions)
+[![Build](https://github.com/TetronIO/MIMSyncScheduler/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/TetronIO/MIMSyncScheduler/actions)
 
 An intelligent, battle-tested scheduler for Microsoft Identity Manager (MIM) 2016 synchronisation operations with support for parallel execution, conditional logic, and comprehensive task orchestration.
 
@@ -449,7 +449,7 @@ GitHub Actions runs all tests automatically on every push:
 - All 37 tests
 - Test result publishing
 
-See [.github/workflows/build.yml](.github/workflows/build.yml)
+See [.github/workflows/build-and-test.yml](.github/workflows/build-and-test.yml)
 
 ### Test Documentation
 Comprehensive test documentation available at:
