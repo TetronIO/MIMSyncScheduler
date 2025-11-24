@@ -1,4 +1,5 @@
 using Serilog;
+using System;
 using Tetron.Mim.SynchronisationScheduler.Interfaces;
 using Tetron.Mim.SynchronisationScheduler.Models;
 
@@ -15,7 +16,7 @@ namespace Tetron.Mim.SynchronisationScheduler.Services
 
         public ScheduleExecutor(ITaskExecutor taskExecutor, bool whatIfMode = false)
         {
-            _taskExecutor = taskExecutor;
+            _taskExecutor = taskExecutor ?? throw new ArgumentNullException(nameof(taskExecutor));
             _whatIfMode = whatIfMode;
             _loggingPrefix = whatIfMode ? "WHATIF: " : string.Empty;
         }

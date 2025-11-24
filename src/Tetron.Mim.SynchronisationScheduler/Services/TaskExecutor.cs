@@ -134,9 +134,9 @@ namespace Tetron.Mim.SynchronisationScheduler.Services
                 return true;
 
             // Check if these are block tasks (parallel execution)
-            var isBlockTask = tasks.First().Type == ScheduleTaskType.Block;
+            var isBlockTasks = tasks.All(t => t.Type == ScheduleTaskType.Block);
 
-            if (isBlockTask)
+            if (isBlockTasks)
             {
                 return ExecuteBlockTasks(tasks, stopOnIncompletion, ref managementAgentImportsHadChanges);
             }
