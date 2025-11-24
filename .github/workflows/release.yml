@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Tetron.Mim.SynchronisationScheduler.sln
+
+    - name: Build solution (Release)
+      run: dotnet build Tetron.Mim.SynchronisationScheduler.sln --configuration Release --no-restore
+
+    - name: Publish application (win-x64)
+      run: dotnet publish src/Tetron.Mim.SynchronisationScheduler/Tetron.Mim.SynchronisationScheduler.csproj --configuration Release --output ./publish/win-x64 --no-build --verbosity normal
+
+    - name: Create release archive
+      run: |
+        $version = "${{ github.event.release.tag_name }}"
+        $archiveName = "MIMSyncScheduler-$version-win-x64.zip"
+        Compress-Archive -Path ./publish/win-x64/* -DestinationPath $archiveName
+        echo "ARCHIVE_NAME=$archiveName" >> $env:GITHUB_ENV
+      shell: pwsh
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./${{ env.ARCHIVE_NAME }}
+        asset_name: ${{ env.ARCHIVE_NAME }}
+        asset_content_type: application/zip
+
+    - name: Display artifact info
+      run: |
+        Write-Host "✅ Release artifact created: ${{ env.ARCHIVE_NAME }}"
+        Write-Host "📦 Uploaded to: ${{ github.event.release.html_url }}"
+      shell: pwsh
