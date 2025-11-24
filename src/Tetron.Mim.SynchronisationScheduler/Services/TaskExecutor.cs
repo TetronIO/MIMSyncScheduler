@@ -16,7 +16,6 @@ namespace Tetron.Mim.SynchronisationScheduler.Services
         private readonly IProcessExecutor _processExecutor;
         private readonly ISqlExecutor _sqlExecutor;
         private readonly IManagementAgentExecutor _managementAgentExecutor;
-        private readonly bool _whatIfMode;
         private readonly string _loggingPrefix;
 
         public TaskExecutor(
@@ -28,7 +27,6 @@ namespace Tetron.Mim.SynchronisationScheduler.Services
             _processExecutor = processExecutor ?? throw new ArgumentNullException(nameof(processExecutor));
             _sqlExecutor = sqlExecutor ?? throw new ArgumentNullException(nameof(sqlExecutor));
             _managementAgentExecutor = managementAgentExecutor ?? throw new ArgumentNullException(nameof(managementAgentExecutor));
-            _whatIfMode = whatIfMode;
             _loggingPrefix = whatIfMode ? "WHATIF: " : string.Empty;
         }
 

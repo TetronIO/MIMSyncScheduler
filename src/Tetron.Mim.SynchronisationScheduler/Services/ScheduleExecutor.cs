@@ -11,13 +11,11 @@ namespace Tetron.Mim.SynchronisationScheduler.Services
     public class ScheduleExecutor : IScheduleExecutor
     {
         private readonly ITaskExecutor _taskExecutor;
-        private readonly bool _whatIfMode;
         private readonly string _loggingPrefix;
 
         public ScheduleExecutor(ITaskExecutor taskExecutor, bool whatIfMode = false)
         {
             _taskExecutor = taskExecutor ?? throw new ArgumentNullException(nameof(taskExecutor));
-            _whatIfMode = whatIfMode;
             _loggingPrefix = whatIfMode ? "WHATIF: " : string.Empty;
         }
 
